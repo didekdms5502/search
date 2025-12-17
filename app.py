@@ -126,11 +126,11 @@ with tab1:
     st.subheader("내부 검색어 키워드 Top 10")
 
     keywords_internal = [
-    "겨울 테마주", "미국금리", "금투자", "환율", "적금",
-    "투자", "신용대출", "후불교통", "상생페이백", "ISA"
-]
+        "겨울 테마주", "미국금리", "금투자", "환율", "적금",
+        "투자", "신용대출", "후불교통", "상생페이백", "ISA"
+    ]
 
-data_internal = {
+    data_internal = {
         "순위": list(range(1, 11)),
         "키워드": keywords_internal,
         "발생건수": [random.randint(500, 1000) for _ in range(10)],
