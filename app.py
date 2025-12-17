@@ -130,8 +130,6 @@ data = {
     "전일 대비": [f"{random.randint(-10, 15)}%" for _ in range(10)]
 }
 
-}
-
 df = pd.DataFrame(data)
 
 # 🔹 순위 왼쪽 인덱스(0,1,2...) 완전 제거 → index=False
