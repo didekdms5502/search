@@ -87,7 +87,7 @@ menu_main = ["📊 Overview", "📍 Recommended Questions"]
 page_main = st.sidebar.radio("", menu_main, index=0, key="page_main")
 
 st.sidebar.markdown("### Contents")
-menu_contents = ["📈 Dataset", "🆎 A/B Test"]
+menu_contents = ["📈 Dataset", " 🆎 A/B Test"]
 page_contents = st.sidebar.radio("", menu_contents, index=0, key="page_contents")
 
 # 페이지 상태 결정
@@ -119,17 +119,27 @@ elif st.session_state.page == "A/B Test":
 st.subheader("외부 트렌드 키워드 Top 10")
 
 keywords = [
-    "겨울 테마주", "미국금리", "금투자", "환율", "부동산대책",
-    "투자", "신용대출", "물가", "주식시장", "반도체 전망"
+    "겨울 테마주", "미국금리", "금투자", "환율", "적금",
+    "투자", "신용대출", "후불교통", "상생페이백", "ISA"
 ]
 
 data = {
     "순위": list(range(1, 11)),
     "키워드": keywords,
-    "발생건수": [random.randint(500, 5000) for _ in range(10)],
+    "발생건수": [random.randint(500, 1000) for _ in range(10)],
     "전일 대비": [f"{random.randint(-10, 15)}%" for _ in range(10)]
 }
 
 df = pd.DataFrame(data)
 
-st.dataframe(df, use_container_width=True)
+# 🔹 순위를 인덱스로 설정 → 왼쪽 0 제거
+df = df.set_index("순위")
+
+# 🔹 가운데 정렬 스타일 적용
+df_style = df.style.set_properties(**{
+    'text-align': 'center'
+}).set_table_styles([
+    dict(selector='th', props=[('text-align', 'center')])
+])
+
+st.write(df_style)
