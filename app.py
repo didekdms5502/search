@@ -28,15 +28,7 @@ st.markdown(
 st.title("🔍검색 키워드 트렌드 분석 자동화")
 
 # 헤더
-st.markdown(
-    f"""
-    <h5 style="margin-bottom: 2rem; color: gray;">
-        {year}년 {month}월 {day}일 기준 검색어 Summary
-    </h4>
-    """,
-    help='전일대비 증감',
-    unsafe_allow_html=True
-)
+st.markdown(f'{year}년 {month}월 {day}일 기준 검색어 Summary', help='전일대비 증감')
 
 day, month, year = st.columns(3)
 day.metric(label="Daily", value="30,080", delta="3.8%",  border=True)
