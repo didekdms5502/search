@@ -26,13 +26,13 @@ st.markdown(
             padding-bottom: 3rem;
         }
 
-        /* 🔹 라디오 버튼 점 숨기기 + 텍스트 메뉴 스타일 */
+        /* 라디오 버튼 점 숨기기 + 텍스트 메뉴 스타일 */
         div[role='radiogroup'] > label > div:first-child {
             opacity: 0 !important;
             width: 0px !important;
         }
         div[role='radiogroup'] > label {
-            padding: 4px 8px !important;
+            padding: 2px 6px !important;
             margin: 0px !important;
             cursor: pointer;
         }
@@ -44,12 +44,16 @@ st.markdown(
             font-weight: 600;
         }
 
-        /* 🔹 사이드바 제목과 라디오 버튼 간격 줄이기 */
-        .sidebar .markdown-text-container h3 {
-            margin-bottom: 4px !important;
+        /* 🔥 사이드바 제목(Main, Contents) 아래 간격 줄이기 */
+        section[data-testid="stSidebar"] h3 {
+            margin-bottom: 1px !important;
+            padding-bottom: 1px !important;
         }
-        .sidebar [role='radiogroup'] {
-            margin-top: 0px !important;
+
+        /* 🔥 라디오 그룹 간격 줄이기 */
+        section[data-testid="stSidebar"] div[role='radiogroup'] {
+            margin-top: 1px !important;
+            margin-bottom: 1px !important;
         }
     </style>
     """,
@@ -95,7 +99,7 @@ elif page_contents in menu_contents:
 # ----------------------
 # 메인 화면
 # ----------------------
-st.title(f"🔹 {st.session_state.page}")
+st.title(f"{st.session_state.page}")
 
 # ----------------------
 # 페이지별 내용
