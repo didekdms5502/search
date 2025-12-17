@@ -1,11 +1,18 @@
 import streamlit as st
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
+
+# 날짜 계산
 today = datetime.today()
-month_ago = datetime(today.year, today.month, today.day) + relativedelta(months=-1)
+
+month_ago = today + relativedelta(months=-1)
 year = today.year
-month = "{}".format(month_ago.strftime('%m'))
-month_ago_2 = datetime(today.year, today.month, today.day) + relativedelta(months=-2)
-month_2 = "{}".format(month_ago_2.strftime('%m'))
+month = month_ago.strftime('%m')
+
+month_ago_2 = today + relativedelta(months=-2)
+month_2 = month_ago_2.strftime('%m')
+
 
 # 주제
 st.title("🔍검색 키워드 트렌드 분석 자동화")
