@@ -58,51 +58,83 @@ st.sidebar.markdown(
 )
 
 # ----------------------
-# 사이드바 제목
+# 사이드바 스타일
 # ----------------------
-st.sidebar.title("Menu")
+st.markdown(
+    """
+    <style>
+    /* 사이드바 폭 조정 */
+    .css-1d391kg .sidebar-content {
+        width: 280px;  /* 원하는 폭으로 조정 */
+    }
+
+    /* 섹션 제목 */
+    .sidebar h2 {
+        font-size: 16pt;
+        font-weight: bold;
+        margin-top: 20px;
+    }
+
+    /* 메뉴 버튼 스타일 */
+    .sidebar .stButton button {
+        width: 100%;
+        text-align: left;
+        padding: 8px 12px;
+        margin: 2px 0;
+        border-radius: 5px;
+    }
+
+    /* 선택 시 배경 색 변경 */
+    .stButton>button:focus {
+        background-color: #e6f0ff;
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # ----------------------
-# Main 섹션
+# 메뉴 상태 초기화
 # ----------------------
-st.sidebar.markdown("<h2>Main</h2>", unsafe_allow_html=True)
-
 if "page" not in st.session_state:
     st.session_state.page = "Overview"
 
+# ----------------------
+# 사이드바 메뉴
+# ----------------------
+st.sidebar.markdown("### Main")
 if st.sidebar.button("📊 Overview"):
     st.session_state.page = "Overview"
 if st.sidebar.button("📍 Recommended Questions"):
     st.session_state.page = "Recommended Questions"
 
-# ----------------------
-# Contents 섹션
-# ----------------------
-st.sidebar.markdown("<h2>Contents</h2>", unsafe_allow_html=True)
-
+st.sidebar.markdown("### Contents")
 if st.sidebar.button("📈 Dataset"):
     st.session_state.page = "Dataset"
-if st.sidebar.button("🆎 A/B Test"):
+if st.sidebar.button("🅰️🅱️ A/B Test"):
     st.session_state.page = "A/B Test"
 
 # ----------------------
 # 메인 화면
 # ----------------------
-st.title("🔹 My Dashboard")
+st.title("🔹 Dashboard")
+
 st.write(f"현재 페이지: **{st.session_state.page}**")
 
 # ----------------------
-# 페이지별 콘텐츠
+# 페이지별 내용
 # ----------------------
 if st.session_state.page == "Overview":
     st.write("📊 Overview 페이지 내용")
-elif st.session_state.page == "Recommended Questions":
+elif st.session_state.page == "New Regist summary":
     st.write("📍 Recommended Questions 페이지 내용")
+elif st.session_state.page == "Recommended Questions":
+    st.write("📈 Dataset")
 elif st.session_state.page == "Dataset":
-    st.write("📈 Dataset 페이지 내용")
+    st.write("💬 Chat Bot 페이지 내용")
 elif st.session_state.page == "A/B Test":
-    st.write("🆎 A/B Test 페이지 내용")
-
+    st.write("🅰️🅱️ A/B Test 페이지 내용")
 
 #col1, col2, col3 = st.columns(3)
 #col1.metric("노출수", "30,083", "1.2 %")
