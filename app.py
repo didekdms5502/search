@@ -1,4 +1,6 @@
 import streamlit as st
+import pandas as pd
+import random
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -13,6 +15,9 @@ day = today.day
 month_ago_2 = today + relativedelta(months=-2)
 month_2 = month_ago_2.strftime('%m')
 
+# ----------------------
+# 전체 스타일
+# ----------------------
 st.markdown(
     """
     <style>
@@ -21,36 +26,39 @@ st.markdown(
             padding-bottom: 3rem;
         }
 
-        /* 🔹 라디오 버튼을 텍스트 메뉴처럼 보이게 만들기 */
-
-        /* 점(●) 숨기기 */
+        /* 🔹 라디오 버튼 점 숨기기 + 텍스트 메뉴 스타일 */
         div[role='radiogroup'] > label > div:first-child {
-            display: none !important;
+            opacity: 0 !important;
+            width: 0px !important;
         }
-
-        /* 라벨 전체를 버튼처럼 보이게 */
         div[role='radiogroup'] > label {
-            padding: 6px 10px;
-            border-radius: 4px;
+            padding: 4px 8px !important;
+            margin: 0px !important;
             cursor: pointer;
         }
-
-        /* Hover 효과 */
         div[role='radiogroup'] > label:hover {
             background-color: #f2f2f2;
         }
-
-        /* 선택된 항목 강조 */
         div[role='radiogroup'] > label[data-selected="true"] {
             background-color: #e0e0e0 !important;
             font-weight: 600;
+        }
+
+        /* 🔹 사이드바 제목과 라디오 버튼 간격 줄이기 */
+        .sidebar .markdown-text-container h3 {
+            margin-bottom: 4px !important;
+        }
+        .sidebar [role='radiogroup'] {
+            margin-top: 0px !important;
         }
     </style>
     """,
     unsafe_allow_html=True
 )
 
+# ----------------------
 # 주제
+# ----------------------
 st.title("🔍검색 키워드 트렌드 분석 자동화")
 
 # 헤더
@@ -60,44 +68,6 @@ day, month, year = st.columns(3)
 day.metric(label="Daily", value="30,080", delta="3.8%",  border=True)
 month.metric(label="Weekly", value="728,459", delta="1.5%",  border=True)
 year.metric(label="Monthly", value="5,897,125", delta="-1.8%",  border=True)
-
-# ----------------------
-# 사이드바 스타일
-# ----------------------
-st.markdown(
-    """
-    <style>
-    /* 사이드바 폭 넓히기 */
-    .css-1d391kg .sidebar-content {
-        width: 300px;
-    }
-
-    /* 버튼 테두리 제거 */
-    .sidebar .stButton>button {
-        width: 100%;
-        text-align: left;
-        padding: 8px 12px;
-        margin: 2px 0;
-        border: none;
-        border-radius: 0px;
-        background-color: transparent;
-    }
-
-    /* 버튼 클릭 시 배경 강조 */
-    .stButton>button:focus {
-        background-color: #e6f0ff;
-    }
-
-    /* 섹션 제목 크기 */
-    .sidebar h2 {
-        font-size: 16pt;
-        font-weight: bold;
-        margin-top: 20px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 # ----------------------
 # 메뉴 상태 초기화
@@ -125,8 +95,7 @@ elif page_contents in menu_contents:
 # ----------------------
 # 메인 화면
 # ----------------------
-st.title("🔹 Dashboard")
-st.write(f"현재 페이지: **{st.session_state.page}**")
+st.title(f"🔹 {st.session_state.page}")
 
 # ----------------------
 # 페이지별 내용
@@ -139,3 +108,24 @@ elif st.session_state.page == "Dataset":
     st.write("📈 Dataset 페이지 내용")
 elif st.session_state.page == "A/B Test":
     st.write("🆎 A/B Test 페이지 내용")
+
+# ----------------------
+# 🔥 메인 페이지 하단 표 추가
+# ----------------------
+st.subheader("외부 트렌드 키워드 Top 10")
+
+keywords = [
+    "겨울 테마주", "미국금리", "금투자", "환율", "부동산대책",
+    "투자", "신용대출", "물가", "주식시장", "반도체 전망"
+]
+
+data = {
+    "순위": list(range(1, 11)),
+    "키워드": keywords,
+    "발생건수": [random.randint(500, 5000) for _ in range(10)],
+    "전일 대비": [f"{random.randint(-10, 15)}%" for _ in range(10)]
+}
+
+df = pd.DataFrame(data)
+
+st.dataframe(df, use_container_width=True)
