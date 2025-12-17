@@ -130,24 +130,35 @@ data = {
     "전일 대비": [f"{random.randint(-10, 15)}%" for _ in range(10)]
 }
 
+}
+
 df = pd.DataFrame(data)
 
-# 🔹 순위를 인덱스로 설정 → 왼쪽 0,1,2 인덱스 컬럼 안 보이게
-df = df.set_index("순위")
+# 🔹 순위 왼쪽 인덱스(0,1,2...) 완전 제거 → index=False
+table_html = df.to_html(index=False, classes="trend-table")
 
-# 🔹 가운데 정렬 스타일 정의
-df_style = (
-    df.style
-      .set_properties(**{"text-align": "center"})
-      .set_table_styles(
-          [
-              dict(
-                  selector="th",
-                  props=[("text-align", "center")]
-              )
-          ]
-      )
+# 🔹 표 가운데 정렬용 CSS + HTML 렌더링
+st.markdown(
+    """
+    <style>
+        table.trend-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        table.trend-table th,
+        table.trend-table td {
+            text-align: center;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+        }
+        table.trend-table thead th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
 )
 
-# 🔹 st.dataframe 대신 st.table 사용 (Styler 지원)
-st.table(df_style)
+st.markdown(table_html, unsafe_allow_html=True)
