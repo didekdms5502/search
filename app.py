@@ -116,7 +116,7 @@ elif st.session_state.page == "A/B Test":
 # ----------------------
 # 🔥 메인 페이지 하단 표 추가
 # ----------------------
-st.subheader("외부 트렌드 키워드 Top 10")
+st.subheader("내부 검색어 키워드 Top 10")
 
 keywords = [
     "겨울 테마주", "미국금리", "금투자", "환율", "적금",
@@ -132,14 +132,22 @@ data = {
 
 df = pd.DataFrame(data)
 
-# 🔹 순위를 인덱스로 설정 → 왼쪽 0 제거
+# 🔹 순위를 인덱스로 설정 → 왼쪽 0,1,2 인덱스 컬럼 안 보이게
 df = df.set_index("순위")
 
-# 🔹 가운데 정렬 스타일 적용
-df_style = df.style.set_properties(**{
-    'text-align': 'center'
-}).set_table_styles([
-    dict(selector='th', props=[('text-align', 'center')])
-])
+# 🔹 가운데 정렬 스타일 정의
+df_style = (
+    df.style
+      .set_properties(**{"text-align": "center"})
+      .set_table_styles(
+          [
+              dict(
+                  selector="th",
+                  props=[("text-align", "center")]
+              )
+          ]
+      )
+)
 
-st.write(df_style)
+# 🔹 st.dataframe 대신 st.table 사용 (Styler 지원)
+st.table(df_style)
