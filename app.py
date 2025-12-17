@@ -80,20 +80,23 @@ st.markdown(
 if "page" not in st.session_state:
     st.session_state.page = "Overview"
 
-# ----------------------
-# 사이드바 메뉴
+## ----------------------
+# 사이드바 메뉴 (버튼 대신 선택지)
 # ----------------------
 st.sidebar.markdown("### Main")
-if st.sidebar.button("📊 Overview"):
-    st.session_state.page = "Overview"
-if st.sidebar.button("📍 Recommended Questions"):
-    st.session_state.page = "Recommended Questions"
+menu_main = ["📊 Overview", "📍 Recommended Questions"]
+page_main = st.sidebar.radio("", menu_main, index=0, key="page_main")
 
 st.sidebar.markdown("### Contents")
-if st.sidebar.button("📈 Dataset"):
-    st.session_state.page = "Dataset"
-if st.sidebar.button("🅰️🅱️ A/B Test"):
-    st.session_state.page = "A/B Test"
+menu_contents = ["📈 Dataset", "🅰️🅱️ A/B Test"]
+page_contents = st.sidebar.radio("", menu_contents, index=0, key="page_contents")
+
+# 페이지 상태 결정
+if page_main in menu_main:
+    st.session_state.page = page_main
+elif page_contents in menu_contents:
+    st.session_state.page = page_contents
+
 
 # ----------------------
 # 메인 화면
