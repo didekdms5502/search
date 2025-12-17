@@ -172,7 +172,7 @@ with tab2:
     st.subheader("외부 키워드 Top 10")
 
     # 1) GitHub RAW CSV URL 입력 (네 GitHub 주소로 변경)
-    url = "https://github.com/didekdms5502/search/blob/main/trend_keywords.csv
+    url = "https://github.com/didekdms5502/search/blob/main/trend_keywords.csv"
 
     # 2) CSV 자동 불러오기
     trend_df = pd.read_csv(url)
@@ -181,7 +181,6 @@ with tab2:
     top10 = trend_df.head(10).copy()
 
     # 4) 발생건수 총합 100 이하로 랜덤 생성
-    #    예: 10개 키워드 → 각 키워드 1~20 사이 랜덤
     remaining = 100
     counts = []
     for i in range(len(top10)):
