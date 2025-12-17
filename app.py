@@ -123,7 +123,7 @@ tab1, tab2 = st.tabs(['내부 검색어', '외부 키워드'])
 # 내부 검색어 탭
 # ----------------------
 with tab1:
-    st.subheader("내부 검색어 키워드 Top 10")
+    st.subheader("내부 검색어 Top 10")
 
     keywords_internal = [
         "겨울 테마주", "미국금리", "금투자", "환율", "적금",
@@ -168,22 +168,26 @@ with tab1:
 # ----------------------
 # 외부 키워드 탭
 # ----------------------
+from google.colab import files
+files.download('/content/drive/MyDrive/trend_keywords.csv')
+
 with tab2:
-    st.subheader("외부 검색어 키워드 Top 10")
+    st.subheader("외부 키워드 Top 10")
 
-    keywords_external = [
-        "AI 기술", "전기차", "반도체 수요", "유가", "금리 전망",
-        "환율 변동", "부동산 정책", "ETF 투자", "해외 주식", "메타버스"
-    ]
+    # CSV 불러오기
+    trend_df = pd.read_csv("trend_keywords.csv")
 
-    data_external = {
-        "순위": list(range(1, 11)),
-        "키워드": keywords_external,
-        "발생건수": [random.randint(500, 5000) for _ in range(10)],
-        "전일 대비": [f"{random.randint(-10, 15)}%" for _ in range(10)],
-    }
+    # TOP 10만 사용
+    top10 = trend_df.head(10)
 
-    df_external = pd.DataFrame(data_external)
-    table_html_external = df_external.to_html(index=False, classes="trend-table")
+    # 임의 발생건수 & 전일 대비 생성
+    top10["발생건수"] = [random.randint(500, 5000) for _ in range(len(top10))]
+    top10["전일 대비"] = [f"{random.randint(-10, 15)}%" for _ in range(len(top10))]
+
+    # 순위 컬럼 추가
+    top10.insert(0, "순위", range(1, len(top10) + 1))
+
+    # HTML 테이블 변환
+    table_html_external = top10.to_html(index=False, classes="trend-table")
 
     st.markdown(table_html_external, unsafe_allow_html=True)
