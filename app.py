@@ -20,6 +20,31 @@ st.markdown(
             padding-top: 3rem;
             padding-bottom: 3rem;
         }
+
+        /* 🔹 라디오 버튼을 텍스트 메뉴처럼 보이게 만들기 */
+
+        /* 점(●) 숨기기 */
+        div[role='radiogroup'] > label > div:first-child {
+            display: none !important;
+        }
+
+        /* 라벨 전체를 버튼처럼 보이게 */
+        div[role='radiogroup'] > label {
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Hover 효과 */
+        div[role='radiogroup'] > label:hover {
+            background-color: #f2f2f2;
+        }
+
+        /* 선택된 항목 강조 */
+        div[role='radiogroup'] > label[data-selected="true"] {
+            background-color: #e0e0e0 !important;
+            font-weight: 600;
+        }
     </style>
     """,
     unsafe_allow_html=True
@@ -44,7 +69,7 @@ st.markdown(
     <style>
     /* 사이드바 폭 넓히기 */
     .css-1d391kg .sidebar-content {
-        width: 300px;  /* 원하는 폭으로 조정 */
+        width: 300px;
     }
 
     /* 버튼 테두리 제거 */
@@ -53,9 +78,9 @@ st.markdown(
         text-align: left;
         padding: 8px 12px;
         margin: 2px 0;
-        border: none;  /* 테두리 제거 */
-        border-radius: 0px; /* 모서리 라운드 제거 */
-        background-color: transparent; /* 배경 투명 */
+        border: none;
+        border-radius: 0px;
+        background-color: transparent;
     }
 
     /* 버튼 클릭 시 배경 강조 */
@@ -80,15 +105,15 @@ st.markdown(
 if "page" not in st.session_state:
     st.session_state.page = "Overview"
 
-## ----------------------
-# 사이드바 메뉴 (버튼 대신 선택지)
+# ----------------------
+# 사이드바 메뉴
 # ----------------------
 st.sidebar.markdown("### Main")
 menu_main = ["📊 Overview", "📍 Recommended Questions"]
 page_main = st.sidebar.radio("", menu_main, index=0, key="page_main")
 
 st.sidebar.markdown("### Contents")
-menu_contents = ["📈 Dataset", "🅰️🅱️ A/B Test"]
+menu_contents = ["📈 Dataset", "🆎 A/B Test"]
 page_contents = st.sidebar.radio("", menu_contents, index=0, key="page_contents")
 
 # 페이지 상태 결정
@@ -96,7 +121,6 @@ if page_main in menu_main:
     st.session_state.page = page_main
 elif page_contents in menu_contents:
     st.session_state.page = page_contents
-
 
 # ----------------------
 # 메인 화면
@@ -114,11 +138,4 @@ elif st.session_state.page == "Recommended Questions":
 elif st.session_state.page == "Dataset":
     st.write("📈 Dataset 페이지 내용")
 elif st.session_state.page == "A/B Test":
-    st.write("🅰️🅱️ A/B Test 페이지 내용")
-
-
-
-#col1, col2, col3 = st.columns(3)
-#col1.metric("노출수", "30,083", "1.2 %")
-#col2.metric("클릭수", "1,585", "-8%")
-#col3.metric("CTR", "5.3%", "-4%")
+    st.write("🆎 A/B Test 페이지 내용")
