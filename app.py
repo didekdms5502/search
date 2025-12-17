@@ -168,26 +168,39 @@ with tab1:
 # ----------------------
 # 외부 키워드 탭
 # ----------------------
-from google.colab import files
-files.download('/content/drive/MyDrive/trend_keywords.csv')
-
 with tab2:
     st.subheader("외부 키워드 Top 10")
 
-    # CSV 불러오기
-    trend_df = pd.read_csv("trend_keywords.csv")
+    # 1) GitHub RAW CSV URL 입력 (네 GitHub 주소로 변경)
+    url = "https://github.com/didekdms5502/search/blob/main/trend_keywords.csv
 
-    # TOP 10만 사용
-    top10 = trend_df.head(10)
+    # 2) CSV 자동 불러오기
+    trend_df = pd.read_csv(url)
 
-    # 임의 발생건수 & 전일 대비 생성
-    top10["발생건수"] = [random.randint(500, 5000) for _ in range(len(top10))]
+    # 3) TOP 10만 사용
+    top10 = trend_df.head(10).copy()
+
+    # 4) 발생건수 총합 100 이하로 랜덤 생성
+    #    예: 10개 키워드 → 각 키워드 1~20 사이 랜덤
+    remaining = 100
+    counts = []
+    for i in range(len(top10)):
+        if i == len(top10) - 1:
+            count = remaining
+        else:
+            count = random.randint(1, max(1, remaining - (len(top10) - i - 1)))
+        counts.append(count)
+        remaining -= count
+
+    top10["발생건수"] = counts
+
+    # 5) 전일 대비 랜덤 생성 (-10% ~ +15%)
     top10["전일 대비"] = [f"{random.randint(-10, 15)}%" for _ in range(len(top10))]
 
-    # 순위 컬럼 추가
+    # 6) 순위 컬럼 추가
     top10.insert(0, "순위", range(1, len(top10) + 1))
 
-    # HTML 테이블 변환
+    # 7) HTML 테이블 변환
     table_html_external = top10.to_html(index=False, classes="trend-table")
 
     st.markdown(table_html_external, unsafe_allow_html=True)
