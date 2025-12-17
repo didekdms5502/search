@@ -114,49 +114,76 @@ elif st.session_state.page == "A/B Test":
     st.write("🆎 A/B Test 페이지 내용")
 
 # ----------------------
-# 🔥 메인 페이지 하단 표 추가
+# 🔥 탭 UI
 # ----------------------
-st.subheader("내부 검색어 키워드 Top 10")
+ui.apply_tab_style()
+tab1, tab2 = st.tabs(['내부 검색어', '외부 키워드'])
 
-keywords = [
+# ----------------------
+# 내부 검색어 탭
+# ----------------------
+with tab1:
+    st.subheader("내부 검색어 키워드 Top 10")
+
+    keywords_internal = [
     "겨울 테마주", "미국금리", "금투자", "환율", "적금",
     "투자", "신용대출", "후불교통", "상생페이백", "ISA"
 ]
 
-data = {
-    "순위": list(range(1, 11)),
-    "키워드": keywords,
-    "발생건수": [random.randint(500, 1000) for _ in range(10)],
-    "전일 대비": [f"{random.randint(-10, 15)}%" for _ in range(10)]
-}
+data_internal = {
+        "순위": list(range(1, 11)),
+        "키워드": keywords_internal,
+        "발생건수": [random.randint(500, 1000) for _ in range(10)],
+        "전일 대비": [f"{random.randint(-10, 15)}%" for _ in range(10)],
+    }
 
-df = pd.DataFrame(data)
+    df_internal = pd.DataFrame(data_internal)
+    table_html_internal = df_internal.to_html(index=False, classes="trend-table")
 
-# 🔹 순위 왼쪽 인덱스(0,1,2...) 완전 제거 → index=False
-table_html = df.to_html(index=False, classes="trend-table")
+    st.markdown(
+        """
+        <style>
+            table.trend-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 14px;
+            }
+            table.trend-table th,
+            table.trend-table td {
+                text-align: center;
+                padding: 6px 8px;
+                border: 1px solid #ddd;
+            }
+            table.trend-table thead th {
+                background-color: #f5f5f5;
+                font-weight: 600;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
-# 🔹 표 가운데 정렬용 CSS + HTML 렌더링
-st.markdown(
-    """
-    <style>
-        table.trend-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-        table.trend-table th,
-        table.trend-table td {
-            text-align: center;
-            padding: 6px 8px;
-            border: 1px solid #ddd;
-        }
-        table.trend-table thead th {
-            background-color: #f5f5f5;
-            font-weight: 600;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+    st.markdown(table_html_internal, unsafe_allow_html=True)
 
-st.markdown(table_html, unsafe_allow_html=True)
+# ----------------------
+# 외부 키워드 탭
+# ----------------------
+with tab2:
+    st.subheader("외부 검색어 키워드 Top 10")
+
+    keywords_external = [
+        "AI 기술", "전기차", "반도체 수요", "유가", "금리 전망",
+        "환율 변동", "부동산 정책", "ETF 투자", "해외 주식", "메타버스"
+    ]
+
+    data_external = {
+        "순위": list(range(1, 11)),
+        "키워드": keywords_external,
+        "발생건수": [random.randint(500, 5000) for _ in range(10)],
+        "전일 대비": [f"{random.randint(-10, 15)}%" for _ in range(10)],
+    }
+
+    df_external = pd.DataFrame(data_external)
+    table_html_external = df_external.to_html(index=False, classes="trend-table")
+
+    st.markdown(table_html_external, unsafe_allow_html=True)
