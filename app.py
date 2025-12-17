@@ -28,13 +28,39 @@ st.markdown(
 st.title("🔍검색 키워드 트렌드 분석 자동화")
 
 # 헤더
-st.markdown(f'{year}년 {month}월 {day}일 기준 검색어 Summary', help='전일대비 증감')
+st.markdown(f'{today.year}년 {today.month}월 {today.day}일 기준 채팅수 Summary', help='전일대비 증감')
 
 day, month, year = st.columns(3)
 day.metric(label="Daily", value="30,080", delta="3.8%",  border=True)
-month.metric(label="Daily", value="728,459", delta="1.5%",  border=True)
-year.metric(label="Daily", value="5,897,125", delta="1.8%",  border=True)
+month.metric(label="Weekly", value="728,459", delta="1.5%",  border=True)
+year.metric(label="Monthly", value="5,897,125", delta="-1.8%",  border=True)
 
+
+# 사이드바 제목
+st.sidebar.title("Menu")
+
+# Main 섹션
+st.sidebar.subheader("Main")
+main_selection = st.sidebar.radio(
+    "Select a page:",
+    ("📊Overview", "📍Recommended Questions")
+)
+
+# Contents 섹션
+st.sidebar.subheader("Contents")
+contents_selection = st.sidebar.radio(
+    "Select a content:",
+    ("📈Dataset", "🆎A/B Test")
+)
+
+# 선택된 메뉴에 따른 메인 화면 표시
+st.title("🔹 My Dashboard")
+
+st.write("### Main Menu Selection")
+st.write(f"Selected Main: {main_selection}")
+
+st.write("### Contents Selection")
+st.write(f"Selected Content: {contents_selection}")
 
 
 
