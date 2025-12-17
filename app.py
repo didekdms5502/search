@@ -99,6 +99,7 @@ elif page_contents in menu_contents:
 # ----------------------
 # 메인 화면
 # ----------------------
+
 st.title(f"{st.session_state.page}")
 
 # ----------------------
