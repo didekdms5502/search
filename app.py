@@ -36,33 +36,72 @@ month.metric(label="Weekly", value="728,459", delta="1.5%",  border=True)
 year.metric(label="Monthly", value="5,897,125", delta="-1.8%",  border=True)
 
 
+# ----------------------
+# 사이드바 스타일 적용
+# ----------------------
+st.sidebar.markdown(
+    """
+    <style>
+    /* 사이드바 제목 */
+    .sidebar .sidebar-content h1 {
+        font-size: 10pt;
+        color: gray;
+    }
+    /* 사이드바 섹션(subheader) */
+    .sidebar .sidebar-content h2 {
+        font-size: 18pt;
+        font-weight: bold;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# ----------------------
 # 사이드바 제목
+# ----------------------
 st.sidebar.title("Menu")
 
+# ----------------------
 # Main 섹션
-st.sidebar.subheader("Main")
-main_selection = st.sidebar.radio(
-    "Select a page:",
-    ("📊Overview", "📍Recommended Questions")
-)
+# ----------------------
+st.sidebar.markdown("<h2>Main</h2>", unsafe_allow_html=True)
 
+if "page" not in st.session_state:
+    st.session_state.page = "Overview"
+
+if st.sidebar.button("📊 Overview"):
+    st.session_state.page = "Overview"
+if st.sidebar.button("📍 Recommended Questions"):
+    st.session_state.page = "Recommended Questions"
+
+# ----------------------
 # Contents 섹션
-st.sidebar.subheader("Contents")
-contents_selection = st.sidebar.radio(
-    "Select a content:",
-    ("📈Dataset", "🆎A/B Test")
-)
+# ----------------------
+st.sidebar.markdown("<h2>Contents</h2>", unsafe_allow_html=True)
 
-# 선택된 메뉴에 따른 메인 화면 표시
+if st.sidebar.button("📈 Dataset"):
+    st.session_state.page = "Dataset"
+if st.sidebar.button("🆎 A/B Test"):
+    st.session_state.page = "A/B Test"
+
+# ----------------------
+# 메인 화면
+# ----------------------
 st.title("🔹 My Dashboard")
+st.write(f"현재 페이지: **{st.session_state.page}**")
 
-st.write("### Main Menu Selection")
-st.write(f"Selected Main: {main_selection}")
-
-st.write("### Contents Selection")
-st.write(f"Selected Content: {contents_selection}")
-
-
+# ----------------------
+# 페이지별 콘텐츠
+# ----------------------
+if st.session_state.page == "Overview":
+    st.write("📊 Overview 페이지 내용")
+elif st.session_state.page == "Recommended Questions":
+    st.write("📍 Recommended Questions 페이지 내용")
+elif st.session_state.page == "Dataset":
+    st.write("📈 Dataset 페이지 내용")
+elif st.session_state.page == "A/B Test":
+    st.write("🆎 A/B Test 페이지 내용")
 
 
 #col1, col2, col3 = st.columns(3)
