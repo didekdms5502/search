@@ -285,7 +285,6 @@ with tab2:
             trend_data_ext[kw] = counts
 
         # 5) 선 그래프 생성
-        st.markdown("#### 외부 키워드 발생건수 변화 추이 (가상 데이터)")
         fig_ext, ax_ext = plt.subplots(figsize=(12, 6))
 
         colors_ext = plt.cm.tab10(np.linspace(0, 1, len(keywords_ext)))
@@ -300,7 +299,7 @@ with tab2:
         ax_ext.set_xlabel("")
 
         # 8) 그래프 제목
-        ax_ext.set_title("외부 키워드 발생건수 변화 추이 (가상 데이터)")
+        ax_ext.set_title("외부 키워드 발생건수 변화 추이")
 
         # 9) x축 날짜 라벨 회전
         plt.xticks(rotation=45)
