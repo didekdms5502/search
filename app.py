@@ -3,6 +3,7 @@ import pandas as pd
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -185,16 +186,50 @@ with tab1:
 
     st.markdown(table_html_internal, unsafe_allow_html=True)
 
-    # 🔹 내부 검색어 그래프 시각화 (발생건수 기준 막대 그래프)
-    st.markdown("#### 내부 검색어 발생건수 그래프")
-    fig_int, ax_int = plt.subplots(figsize=(8, 4))
-    ax_int.bar(df_internal["키워드"], df_internal["발생건수"], color="#4C72B0")
-    ax_int.set_xlabel("키워드")
-    ax_int.set_ylabel("발생건수")
-    ax_int.set_title("내부 검색어 Top 10 발생건수")
-    plt.xticks(rotation=45, ha="right")
-    st.pyplot(fig_int)
+    # ----------------------
+    # 🔥 내부 키워드 순위 변화 선 그래프
+    # ----------------------
+    import matplotlib.pyplot as plt
 
+    # 1) 한글 폰트 설정 (Windows 기준)
+    plt.rc('font', family='Malgun Gothic')
+    plt.rc('axes', unicode_minus=False)
+
+    # 2) 날짜 생성 (2025-12-01 ~ 2025-12-18)
+    dates = pd.date_range(start="2025-12-01", end="2025-12-18")
+
+    # 3) 내부 키워드 리스트
+    keywords = df_internal["키워드"].tolist()
+
+    # 4) 키워드별 순위 변화(임의 생성: 1~10위)
+    trend_data = {}
+    for kw in keywords:
+        ranks = np.clip(np.random.randint(1, 11, size=len(dates)), 1, 10)
+        trend_data[kw] = ranks
+
+    # 5) 선 그래프 생성
+    fig_int, ax_int = plt.subplots(figsize=(12, 6))
+
+    colors = plt.cm.tab10(np.linspace(0, 1, len(keywords)))
+
+    for i, kw in enumerate(keywords):
+        ax_int.plot(dates, trend_data[kw], label=kw, color=colors[i], marker="o")
+
+    # 6) y축: 1위가 위로 오도록 반전
+    ax_int.invert_yaxis()
+
+    # 7) 한글 축/제목
+    ax_int.set_title("내부 검색어 순위 변화 추이 (가상 데이터)")
+    ax_int.set_xlabel("날짜")
+    ax_int.set_ylabel("순위 (1위가 상단)")
+
+    # 8) x축 날짜 라벨 회전
+    plt.xticks(rotation=45)
+
+    # 9) 범례 표시
+    ax_int.legend(loc="upper left", bbox_to_anchor=(1, 1))
+
+    st.pyplot(fig_int)
 
 # ----------------------
 # 외부 키워드 탭
