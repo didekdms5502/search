@@ -172,10 +172,10 @@ with tab1:
 with tab2:
     st.subheader("외부 키워드 Top 10")
 
-    # 1) GitHub RAW CSV URL 입력 
+    # 1) GitHub RAW CSV URL 입력
     csv_url = "https://raw.githubusercontent.com/didekdms5502/search/main/trend_keywords.csv"
 
-    # 2) CSV 불러오기
+    # 2) CSV 자동 불러오기
     trend_df = pd.read_csv(csv_url)
 
     # 3) TOP 10만 사용
@@ -183,16 +183,16 @@ with tab2:
 
     # 4) 발생건수 총합 100 이하로 랜덤 생성
     remaining = 100
-    counts = []
+    random_counts = []
     for i in range(len(top10)):
         if i == len(top10) - 1:
-            count = remaining
+            value = remaining
         else:
-            count = random.randint(1, max(1, remaining - (len(top10) - i - 1)))
-        counts.append(count)
-        remaining -= count
+            value = random.randint(1, max(1, remaining - (len(top10) - i - 1)))
+        random_counts.append(value)
+        remaining -= value
 
-    top10["발생건수"] = counts
+    top10["발생건수"] = random_counts
 
     # 5) 전일 대비 랜덤 생성 (-10% ~ +15%)
     top10["전일 대비"] = [f"{random.randint(-10, 15)}%" for _ in range(len(top10))]
