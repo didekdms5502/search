@@ -172,16 +172,11 @@ with tab1:
 with tab2:
     st.subheader("외부 키워드 Top 10")
 
-    import requests
-    from io import StringIO
-
-    # GitHub RAW CSV URL (blob → raw 로 변경)
+    # GitHub RAW CSV URL
     csv_url = "https://raw.githubusercontent.com/didekdms5502/search/main/search_trend_20251218.csv"
 
-    # CSV 불러오기 (requests 방식)
-    response = requests.get(csv_url)
-    response.encoding = 'utf-8'  # 한글 깨짐 방지
-    df_csv = pd.read_csv(StringIO(response.text))
+    # CSV 불러오기
+    df_csv = pd.read_csv(csv_url)
 
     # keyword 컬럼에서 상위 10개 추출
     keywords_external = df_csv["keyword"].head(10).tolist()
@@ -189,9 +184,9 @@ with tab2:
     # 가상의 수치 생성
     data_external = {
         "순위": list(range(1, len(keywords_external) + 1)),
-        "키워드": keywords_external,
-        "발생건수": [random.randint(500, 1000) for _ in keywords_external],
-        "전일 대비": [f"{random.randint(-10, 15)}%" for _ in keywords_external],
+        "키워드": keywordsexternal,
+        "발생건수": [random.randint(500, 1000) for  in keywordsexternal],
+        "전일 대비": [f"{random.randint(-10, 15)}%" for  in keywords_external],
     }
 
     df_external = pd.DataFrame(data_external)
