@@ -145,21 +145,56 @@ tab1, tab2 = st.tabs(['내부 검색어', '외부 키워드'])
 with tab1:
     st.subheader("내부 검색어 Top 10")
 
-    internal_df = pd.read_csv("internal_keywords.csv")  # 네 파일로 변경
+    keywords_internal = [
+        "겨울 테마주", "미국금리", "금투자", "환율", "적금",
+        "투자", "신용대출", "후불교통", "상생페이백", "ISA"
+    ]
 
-    top10_internal = internal_df.head(10).copy()
+    data_internal = {
+        "순위": list(range(1, 11)),
+        "키워드": keywords_internal,
+        "발생건수": [random.randint(500, 1000) for _ in range(10)],
+        "전일 대비": [f"{random.randint(-10, 15)}%" for _ in range(10)],
+    }
 
-    top10_internal["발생건수"] = [random.randint(300, 4000) for _ in range(len(top10_internal))]
-    top10_internal["전일 대비"] = [f"{random.randint(-10, 15)}%" for _ in range(len(top10_internal))]
+    df_internal = pd.DataFrame(data_internal)
+    table_html_internal = df_internal.to_html(index=False, classes="trend-table")
 
-    top10_internal.insert(0, "순위", range(1, len(top10_internal) + 1))
+    st.markdown(
+        """
+        <style>
+            table.trend-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 14px;
+            }
+            table.trend-table th,
+            table.trend-table td {
+                text-align: center;
+                padding: 6px 8px;
+                border: 1px solid #ddd;
+            }
+            table.trend-table thead th {
+                background-color: #f5f5f5;
+                font-weight: 600;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
-    table_html_internal = top10_internal.to_html(index=False, classes="trend-table")
     st.markdown(table_html_internal, unsafe_allow_html=True)
 
-    # 🔥 키워드별 추이 그래프 추가
-    st.subheader("내부 검색어 검색량 추이")
-    plot_keyword_trends(top10_internal, "내부 검색어 검색량 추이")
+    # 🔹 내부 검색어 그래프 시각화 (발생건수 기준 막대 그래프)
+    st.markdown("#### 내부 검색어 발생건수 그래프")
+    fig_int, ax_int = plt.subplots(figsize=(8, 4))
+    ax_int.bar(df_internal["키워드"], df_internal["발생건수"], color="#4C72B0")
+    ax_int.set_xlabel("키워드")
+    ax_int.set_ylabel("발생건수")
+    ax_int.set_title("내부 검색어 Top 10 발생건수")
+    plt.xticks(rotation=45, ha="right")
+    st.pyplot(fig_int)
+
 
 # ----------------------
 # 외부 키워드 탭
@@ -167,35 +202,50 @@ with tab1:
 with tab2:
     st.subheader("외부 키워드 Top 10")
 
-    import requests
-    from io import StringIO
-
-    # 1) GitHub RAW CSV URL
+    # 1) GitHub RAW CSV URL 입력
     csv_url = "https://raw.githubusercontent.com/didekdms5502/search/main/trend_keywords.csv"
 
-    # 2) CSV 불러오기 (requests 방식)
-    response = requests.get(csv_url)
-    response.encoding = "utf-8"
-    trend_df = pd.read_csv(StringIO(response.text))
+    # 2) CSV 자동 불러오기
+    trend_df = pd.read_csv(csv_url)
 
-    # 3) keyword 컬럼이 없으면 에러 방지 차원에서 컬럼 이름 확인
-    if "keyword" not in trend_df.columns:
-        st.error("CSV 파일에 'keyword' 컬럼이 없습니다. 컬럼 이름을 확인해주세요.")
+    # 3) TOP 10만 사용
+    top10 = trend_df.head(10).copy()
+
+    # 👉 count 컬럼 제거 (CSV에 count가 있을 때 자동 제거)
+    top10 = top10.drop(columns=["count"], errors="ignore")
+
+    # 4) 발생건수 총합 100 이하로 랜덤 생성 (지금은 실제로는 사용 안 함)
+    remaining = 100
+    random_counts = []
+    for i in range(len(top10)):
+        if i == len(top10) - 1:
+            value = remaining
+        else:
+            value = random.randint(1, max(1, remaining - (len(top10) - i - 1)))
+        random_counts.append(value)
+        remaining -= value
+
+    top10["발생건수"] = [random.randint(500, 5000) for _ in range(len(top10))]
+
+    # 5) 전일 대비 랜덤 생성 (-10% ~ +15%)
+    top10["전일 대비"] = [f"{random.randint(-10, 15)}%" for _ in range(len(top10))]
+
+    # 6) 순위 컬럼 추가
+    top10.insert(0, "순위", range(1, len(top10) + 1))
+
+    # 7) HTML 테이블 변환
+    table_html_external = top10.to_html(index=False, classes="trend-table")
+    st.markdown(table_html_external, unsafe_allow_html=True)
+
+    # 🔹 외부 키워드 그래프 시각화 (발생건수 기준 막대 그래프)
+    if "keyword" in top10.columns:
+        st.markdown("#### 외부 키워드 발생건수 그래프")
+        fig_ext, ax_ext = plt.subplots(figsize=(8, 4))
+        ax_ext.bar(top10["keyword"], top10["발생건수"], color="#DD8452")
+        ax_ext.set_xlabel("키워드")
+        ax_ext.set_ylabel("발생건수")
+        ax_ext.set_title("외부 키워드 Top 10 발생건수")
+        plt.xticks(rotation=45, ha="right")
+        st.pyplot(fig_ext)
     else:
-        # 4) TOP 10만 사용
-        top10 = trend_df[["keyword"]].head(10).copy()
-
-        # 5) 발생건수 & 전일 대비 생성
-        top10["발생건수"] = [random.randint(500, 5000) for _ in range(len(top10))]
-        top10["전일 대비"] = [f"{random.randint(-10, 15)}%" for _ in range(len(top10))]
-
-        # 6) 순위 컬럼 추가
-        top10.insert(0, "순위", range(1, len(top10) + 1))
-
-        # 7) HTML 테이블 변환
-        table_html_external = top10.to_html(index=False, classes="trend-table")
-        st.markdown(table_html_external, unsafe_allow_html=True)
-
-        # 8) 키워드 트렌드 그래프 (임의 값으로 생성)
-        st.markdown("#### 7일간 키워드 트렌드 (임의 시각화)")
-        plot_keyword_trends(top10.rename(columns={"keyword": "keyword"}), "외부 키워드 7일 트렌드")
+        st.error("CSV 파일에 'keyword' 컬럼이 없습니다. 컬럼명을 확인해주세요.")
