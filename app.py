@@ -153,7 +153,7 @@ with tab1:
 
     data_internal = {
         "순위": list(range(1, 11)),
-        "키워드": keywords_internal,
+        "keyword": keywords_internal,
         "발생건수": [random.randint(500, 1000) for _ in range(10)],
         "전일 대비": [f"{random.randint(-10, 15)}%" for _ in range(10)],
     }
@@ -199,7 +199,7 @@ with tab1:
     dates = pd.date_range(start="2025-12-01", end="2025-12-18")
 
     # 3) 내부 키워드 리스트
-    keywords = df_internal["키워드"].tolist()
+    keywords = df_internal["keyword"].tolist()
 
     # 4) 키워드별 발생건수 변화(임의 생성)
     trend_data = {}
