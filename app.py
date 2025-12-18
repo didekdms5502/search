@@ -172,11 +172,16 @@ with tab1:
 with tab2:
     st.subheader("외부 키워드 Top 10")
 
-    # GitHub RAW CSV URL
-    csv_url = "https://github.com/didekdms5502/search/blob/main/search_trend_20251218.csv"
+    import requests
+    from io import StringIO
 
-    # CSV 불러오기
-    df_csv = pd.read_csv(csv_url)
+    # GitHub RAW CSV URL (blob → raw 로 변경)
+    csv_url = "https://raw.githubusercontent.com/didekdms5502/search/main/search_trend_20251218.csv"
+
+    # CSV 불러오기 (requests 방식)
+    response = requests.get(csv_url)
+    response.encoding = 'utf-8'  # 한글 깨짐 방지
+    df_csv = pd.read_csv(StringIO(response.text))
 
     # keyword 컬럼에서 상위 10개 추출
     keywords_external = df_csv["keyword"].head(10).tolist()
