@@ -172,24 +172,35 @@ with tab1:
 with tab2:
     st.subheader("외부 키워드 Top 10")
 
-    # GitHub RAW CSV URL
-    csv_url = "https://raw.githubusercontent.com/didekdms5502/search/main/search_trend_20251218.csv"
+    # 1) GitHub RAW CSV URL 입력 
+    csv_url = "https://raw.githubusercontent.com/didekdms5502/search/main/trend_keywords.csv"
 
-    # CSV 불러오기
-    df_csv = pd.read_csv(csv_url)
+    # 2) CSV 불러오기
+    trend_df = pd.read_csv(csv_url)
 
-    # keyword 컬럼에서 상위 10개 추출
-    keywords_external = df_csv["keyword"].head(10).tolist()
+    # 3) TOP 10만 사용
+    top10 = trend_df.head(10).copy()
 
-    # 가상의 수치 생성
-    data_external = {
-        "순위": list(range(1, len(keywords_external) + 1)),
-        "키워드": keywordsexternal,
-        "발생건수": [random.randint(500, 1000) for  in keywordsexternal],
-        "전일 대비": [f"{random.randint(-10, 15)}%" for  in keywords_external],
-    }
+    # 4) 발생건수 총합 100 이하로 랜덤 생성
+    remaining = 100
+    counts = []
+    for i in range(len(top10)):
+        if i == len(top10) - 1:
+            count = remaining
+        else:
+            count = random.randint(1, max(1, remaining - (len(top10) - i - 1)))
+        counts.append(count)
+        remaining -= count
 
-    df_external = pd.DataFrame(data_external)
-    table_html_external = df_external.to_html(index=False, classes="trend-table")
+    top10["발생건수"] = counts
+
+    # 5) 전일 대비 랜덤 생성 (-10% ~ +15%)
+    top10["전일 대비"] = [f"{random.randint(-10, 15)}%" for _ in range(len(top10))]
+
+    # 6) 순위 컬럼 추가
+    top10.insert(0, "순위", range(1, len(top10) + 1))
+
+    # 7) HTML 테이블 변환
+    table_html_external = top10.to_html(index=False, classes="trend-table")
 
     st.markdown(table_html_external, unsafe_allow_html=True)
