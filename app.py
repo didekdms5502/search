@@ -230,6 +230,52 @@ with tab1:
     ax_int.legend(loc="upper left", bbox_to_anchor=(1, 1))
 
     st.pyplot(fig_int)
+    # ----------------------
+    # 🔥 내부 키워드 발생건수 변화 선 그래프
+    # ----------------------
+    import matplotlib.pyplot as plt
+
+    # 1) 한글 폰트 설정 (Windows 기준)
+    plt.rc('font', family='Malgun Gothic')
+    plt.rc('axes', unicode_minus=False)
+
+    # 2) 날짜 생성 (2025-12-01 ~ 2025-12-18)
+    dates = pd.date_range(start="2025-12-01", end="2025-12-18")
+
+    # 3) 내부 키워드 리스트
+    keywords = df_internal["키워드"].tolist()
+
+    # 4) 키워드별 발생건수 변화(임의 생성)
+    trend_data = {}
+    for kw in keywords:
+        # 18일 동안 500~5000 사이의 랜덤 발생건수 생성
+        counts = np.random.randint(500, 5000, size=len(dates))
+        trend_data[kw] = counts
+
+    # 5) 선 그래프 생성
+    fig_int, ax_int = plt.subplots(figsize=(12, 6))
+
+    colors = plt.cm.tab10(np.linspace(0, 1, len(keywords)))
+
+    for i, kw in enumerate(keywords):
+        ax_int.plot(dates, trend_data[kw], label=kw, color=colors[i], marker="o")
+
+    # 6) y축: 발생건수 (순위 아님)
+    ax_int.set_ylabel("발생건수")
+
+    # 7) x축 라벨 제거
+    ax_int.set_xlabel("")
+
+    # 8) 그래프 제목
+    ax_int.set_title("내부 검색어 발생건수 변화 추이 (가상 데이터)")
+
+    # 9) x축 날짜 라벨 회전
+    plt.xticks(rotation=45)
+
+    # 10) 범례 표시
+    ax_int.legend(loc="upper left", bbox_to_anchor=(1, 1))
+
+    st.pyplot(fig_int)
 
 # ----------------------
 # 외부 키워드 탭
