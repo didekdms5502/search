@@ -167,31 +167,35 @@ with tab1:
 with tab2:
     st.subheader("외부 키워드 Top 10")
 
-    # GitHub RAW CSV URL
+    import requests
+    from io import StringIO
+
+    # 1) GitHub RAW CSV URL
     csv_url = "https://raw.githubusercontent.com/didekdms5502/search/main/trend_keywords.csv"
 
-    # CSV 불러오기
-    trend_df = pd.read_csv(csv_url)
+    # 2) CSV 불러오기 (requests 방식)
+    response = requests.get(csv_url)
+    response.encoding = "utf-8"
+    trend_df = pd.read_csv(StringIO(response.text))
 
-    # TOP 10
-    top10 = trend_df.head(10).copy()
+    # 3) keyword 컬럼이 없으면 에러 방지 차원에서 컬럼 이름 확인
+    if "keyword" not in trend_df.columns:
+        st.error("CSV 파일에 'keyword' 컬럼이 없습니다. 컬럼 이름을 확인해주세요.")
+    else:
+        # 4) TOP 10만 사용
+        top10 = trend_df[["keyword"]].head(10).copy()
 
-    # count 컬럼 제거
-    top10 = top10.drop(columns=["count"], errors="ignore")
+        # 5) 발생건수 & 전일 대비 생성
+        top10["발생건수"] = [random.randint(500, 5000) for _ in range(len(top10))]
+        top10["전일 대비"] = [f"{random.randint(-10, 15)}%" for _ in range(len(top10))]
 
-    # 발생건수 크게 랜덤 생성
-    top10["발생건수"] = [random.randint(500, 5000) for _ in range(len(top10))]
+        # 6) 순위 컬럼 추가
+        top10.insert(0, "순위", range(1, len(top10) + 1))
 
-    # 전일 대비 랜덤 생성
-    top10["전일 대비"] = [f"{random.randint(-10, 15)}%" for _ in range(len(top10))]
+        # 7) HTML 테이블 변환
+        table_html_external = top10.to_html(index=False, classes="trend-table")
+        st.markdown(table_html_external, unsafe_allow_html=True)
 
-    # 순위 추가
-    top10.insert(0, "순위", range(1, len(top10) + 1))
-
-    # 테이블 출력
-    table_html_external = top10.to_html(index=False, classes="trend-table")
-    st.markdown(table_html_external, unsafe_allow_html=True)
-
-    # 🔥 키워드별 추이 그래프 추가
-    st.subheader("외부 키워드 검색량 추이")
-    plot_keyword_trends(top10, "외부 키워드 검색량 추이")
+        # 8) 키워드 트렌드 그래프 (임의 값으로 생성)
+        st.markdown("#### 7일간 키워드 트렌드 (임의 시각화)")
+        plot_keyword_trends(top10.rename(columns={"keyword": "keyword"}), "외부 키워드 7일 트렌드")
