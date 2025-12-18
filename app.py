@@ -122,17 +122,30 @@ elif page_contents in menu_contents:
 
 st.title(f"{st.session_state.page}")
 
+# # ----------------------
+# # 페이지별 내용
+# # ----------------------
+# if st.session_state.page == "Overview":
+#     st.write("📊 Overview 페이지 내용")
+# elif st.session_state.page == "Recommended Questions":
+#     st.write("📍 Recommended Questions 페이지 내용")
+# elif st.session_state.page == "Dataset":
+#     st.write("📈 Dataset 페이지 내용")
+# elif st.session_state.page == "A/B Test":
+#     st.write("🆎 A/B Test 페이지 내용")
+
 # ----------------------
-# 페이지별 내용
+# 페이지별 내용 (내용 제거)
 # ----------------------
 if st.session_state.page == "Overview":
-    st.write("📊 Overview 페이지 내용")
+    pass
 elif st.session_state.page == "Recommended Questions":
-    st.write("📍 Recommended Questions 페이지 내용")
+    pass
 elif st.session_state.page == "Dataset":
-    st.write("📈 Dataset 페이지 내용")
+    pass
 elif st.session_state.page == "A/B Test":
-    st.write("🆎 A/B Test 페이지 내용")
+    pass
+
 
 # ----------------------
 # 🔥 탭 UI
