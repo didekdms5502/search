@@ -1,9 +1,28 @@
 import streamlit as st
 import pandas as pd
 import random
+import numpy as np
+import matplotlib.pyplot as plt
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
+def plot_keyword_trends(df, title):
+    # 최근 7일 날짜 생성
+    dates = pd.date_range(end=pd.Timestamp.today(), periods=7)
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    # df 안의 keyword 컬럼 기준으로 그래프 생성
+    for keyword in df["keyword"]:
+        trend = np.random.randint(300, 5000, size=7)  # 임의 검색량
+        ax.plot(dates, trend, marker="o", label=keyword)
+
+    ax.set_title(title)
+    ax.set_xlabel("날짜")
+    ax.set_ylabel("검색량(임의 생성)")
+    ax.legend(loc="upper left", bbox_to_anchor=(1, 1))
+
+    st.pyplot(fig)
 
 # 날짜 계산
 today = datetime.today()
@@ -126,45 +145,21 @@ tab1, tab2 = st.tabs(['내부 검색어', '외부 키워드'])
 with tab1:
     st.subheader("내부 검색어 Top 10")
 
-    keywords_internal = [
-        "겨울 테마주", "미국금리", "금투자", "환율", "적금",
-        "투자", "신용대출", "후불교통", "상생페이백", "ISA"
-    ]
+    internal_df = pd.read_csv("internal_keywords.csv")  # 네 파일로 변경
 
-    data_internal = {
-        "순위": list(range(1, 11)),
-        "키워드": keywords_internal,
-        "발생건수": [random.randint(500, 1000) for _ in range(10)],
-        "전일 대비": [f"{random.randint(-10, 15)}%" for _ in range(10)],
-    }
+    top10_internal = internal_df.head(10).copy()
 
-    df_internal = pd.DataFrame(data_internal)
-    table_html_internal = df_internal.to_html(index=False, classes="trend-table")
+    top10_internal["발생건수"] = [random.randint(300, 4000) for _ in range(len(top10_internal))]
+    top10_internal["전일 대비"] = [f"{random.randint(-10, 15)}%" for _ in range(len(top10_internal))]
 
-    st.markdown(
-        """
-        <style>
-            table.trend-table {
-                width: 100%;
-                border-collapse: collapse;
-                font-size: 14px;
-            }
-            table.trend-table th,
-            table.trend-table td {
-                text-align: center;
-                padding: 6px 8px;
-                border: 1px solid #ddd;
-            }
-            table.trend-table thead th {
-                background-color: #f5f5f5;
-                font-weight: 600;
-            }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+    top10_internal.insert(0, "순위", range(1, len(top10_internal) + 1))
 
+    table_html_internal = top10_internal.to_html(index=False, classes="trend-table")
     st.markdown(table_html_internal, unsafe_allow_html=True)
+
+    # 🔥 키워드별 추이 그래프 추가
+    st.subheader("내부 검색어 검색량 추이")
+    plot_keyword_trends(top10_internal, "내부 검색어 검색량 추이")
 
 # ----------------------
 # 외부 키워드 탭
@@ -172,38 +167,31 @@ with tab1:
 with tab2:
     st.subheader("외부 키워드 Top 10")
 
-    # 1) GitHub RAW CSV URL 입력
+    # GitHub RAW CSV URL
     csv_url = "https://raw.githubusercontent.com/didekdms5502/search/main/trend_keywords.csv"
 
-    # 2) CSV 자동 불러오기
+    # CSV 불러오기
     trend_df = pd.read_csv(csv_url)
 
-    # 3) TOP 10만 사용
+    # TOP 10
     top10 = trend_df.head(10).copy()
 
-    # 👉 count 컬럼 제거 (CSV에 count가 있을 때 자동 제거)
+    # count 컬럼 제거
     top10 = top10.drop(columns=["count"], errors="ignore")
 
-    # 4) 발생건수 총합 100 이하로 랜덤 생성
-    remaining = 100
-    random_counts = []
-    for i in range(len(top10)):
-        if i == len(top10) - 1:
-            value = remaining
-        else:
-            value = random.randint(1, max(1, remaining - (len(top10) - i - 1)))
-        random_counts.append(value)
-        remaining -= value
-
+    # 발생건수 크게 랜덤 생성
     top10["발생건수"] = [random.randint(500, 5000) for _ in range(len(top10))]
 
-    # 5) 전일 대비 랜덤 생성 (-10% ~ +15%)
+    # 전일 대비 랜덤 생성
     top10["전일 대비"] = [f"{random.randint(-10, 15)}%" for _ in range(len(top10))]
 
-    # 6) 순위 컬럼 추가
+    # 순위 추가
     top10.insert(0, "순위", range(1, len(top10) + 1))
 
-    # 7) HTML 테이블 변환
+    # 테이블 출력
     table_html_external = top10.to_html(index=False, classes="trend-table")
-
     st.markdown(table_html_external, unsafe_allow_html=True)
+
+    # 🔥 키워드별 추이 그래프 추가
+    st.subheader("외부 키워드 검색량 추이")
+    plot_keyword_trends(top10, "외부 키워드 검색량 추이")
