@@ -181,6 +181,9 @@ with tab2:
     # 3) TOP 10만 사용
     top10 = trend_df.head(10).copy()
 
+    # 👉 count 컬럼 제거 (CSV에 count가 있을 때 자동 제거)
+    top10 = top10.drop(columns=["count"], errors="ignore")
+
     # 4) 발생건수 총합 100 이하로 랜덤 생성
     remaining = 100
     random_counts = []
