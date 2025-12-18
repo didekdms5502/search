@@ -173,7 +173,7 @@ with tab2:
     st.subheader("외부 키워드 Top 10")
 
     # GitHub RAW CSV URL
-    csv_url = "https://github.com/didekdms5502/search/blob/main/search%20trend_20251218.csv"
+    csv_url = "https://github.com/didekdms5502/search/blob/main/search_trend_20251218.csv"
 
     # CSV 불러오기
     df_csv = pd.read_csv(csv_url)
