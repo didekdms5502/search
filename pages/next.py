@@ -8,7 +8,7 @@ st.markdown("""
 <p style="font-size:20px; font-weight:bold; line-height:1.6; text-align:center;">
 이번 프로젝트를 기반으로,<br>
 점진적인 업데이트와 개선을 통해 데이터를 보완하고 분석을 고도화하여<br>
-완성도를 높여 나가려고 합니다.감사합니다.
+완성도를 높여 나가려고 합니다. 감사합니다.😊🙇‍♀️
 </p>
 """, unsafe_allow_html=True)
 
