@@ -166,18 +166,6 @@ with tab1:
 
     st.markdown(table_html_internal, unsafe_allow_html=True)
 
- 11)),
-        "키워드": keywords_external,
-        "발생건수": [random.randint(500, 1000) for _ in range(10)],
-        "전일 대비": [f"{random.randint(-10, 15)}%" for _ in range(10)],
-    }
-
-    df_external = pd.DataFrame(data_external)
-    table_html_external = df_external.to_html(index=False, classes="trend-table")
-
-    st.markdown(table_html_external, unsafe_allow_html=True)
-
-
 # ----------------------
 # 외부 키워드 탭
 # ----------------------
