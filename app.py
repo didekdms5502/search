@@ -195,7 +195,7 @@ with tab2:
         random_counts.append(value)
         remaining -= value
 
-    top10["발생건수"] = random_counts
+    top10["발생건수"] = [random.randint(500, 5000) for _ in range(len(top10))]
 
     # 5) 전일 대비 랜덤 생성 (-10% ~ +15%)
     top10["전일 대비"] = [f"{random.randint(-10, 15)}%" for _ in range(len(top10))]
