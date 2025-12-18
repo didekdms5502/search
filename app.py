@@ -166,20 +166,7 @@ with tab1:
 
     st.markdown(table_html_internal, unsafe_allow_html=True)
 
-# ----------------------
-# 외부 키워드 탭
-# ----------------------
-with tab2:
-    st.subheader("외부 키워드 Top 10")
-
-    keywords_external = [
-        "민생회복소비쿠폰", "금리", "고용", "물가", "돌봄",
-        "반도체", "균형발전", "금리인하", "내수", "수출"
-
-    ]
-
-    data_external = {
-        "순위": list(range(1, 11)),
+ 11)),
         "키워드": keywords_external,
         "발생건수": [random.randint(500, 1000) for _ in range(10)],
         "전일 대비": [f"{random.randint(-10, 15)}%" for _ in range(10)],
@@ -191,4 +178,30 @@ with tab2:
     st.markdown(table_html_external, unsafe_allow_html=True)
 
 
+# ----------------------
+# 외부 키워드 탭
+# ----------------------
+with tab2:
+    st.subheader("외부 키워드 Top 10")
 
+    # GitHub RAW CSV URL
+    csv_url = "https://github.com/didekdms5502/search/blob/main/search%20trend_20251218.csv"
+
+    # CSV 불러오기
+    df_csv = pd.read_csv(csv_url)
+
+    # keyword 컬럼에서 상위 10개 추출
+    keywords_external = df_csv["keyword"].head(10).tolist()
+
+    # 가상의 수치 생성
+    data_external = {
+        "순위": list(range(1, len(keywords_external) + 1)),
+        "키워드": keywords_external,
+        "발생건수": [random.randint(500, 1000) for _ in keywords_external],
+        "전일 대비": [f"{random.randint(-10, 15)}%" for _ in keywords_external],
+    }
+
+    df_external = pd.DataFrame(data_external)
+    table_html_external = df_external.to_html(index=False, classes="trend-table")
+
+    st.markdown(table_html_external, unsafe_allow_html=True)
