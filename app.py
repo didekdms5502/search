@@ -251,38 +251,63 @@ with tab2:
     # 👉 count 컬럼 제거 (CSV에 count가 있을 때 자동 제거)
     top10 = top10.drop(columns=["count"], errors="ignore")
 
-    # 4) 발생건수 총합 100 이하로 랜덤 생성 (지금은 실제로는 사용 안 함)
-    remaining = 100
-    random_counts = []
-    for i in range(len(top10)):
-        if i == len(top10) - 1:
-            value = remaining
-        else:
-            value = random.randint(1, max(1, remaining - (len(top10) - i - 1)))
-        random_counts.append(value)
-        remaining -= value
-
+    # 4) 발생건수 / 전일대비 생성 (현재는 표에만 사용)
     top10["발생건수"] = [random.randint(500, 5000) for _ in range(len(top10))]
-
-    # 5) 전일 대비 랜덤 생성 (-10% ~ +15%)
     top10["전일 대비"] = [f"{random.randint(-10, 15)}%" for _ in range(len(top10))]
 
-    # 6) 순위 컬럼 추가
+    # 5) 순위 컬럼 추가
     top10.insert(0, "순위", range(1, len(top10) + 1))
 
-    # 7) HTML 테이블 변환
+    # 6) HTML 테이블 변환
     table_html_external = top10.to_html(index=False, classes="trend-table")
     st.markdown(table_html_external, unsafe_allow_html=True)
 
-    # 🔹 외부 키워드 그래프 시각화 (발생건수 기준 막대 그래프)
-    if "keyword" in top10.columns:
-        st.markdown("#### 외부 키워드 발생건수 그래프")
-        fig_ext, ax_ext = plt.subplots(figsize=(8, 4))
-        ax_ext.bar(top10["keyword"], top10["발생건수"], color="#DD8452")
-        ax_ext.set_xlabel("키워드")
+    # ----------------------
+    # 🔥 외부 키워드 발생건수 변화 선 그래프
+    # ----------------------
+    if "keyword" in trend_df.columns:
+        import matplotlib.pyplot as plt
+
+        # 1) 한글 폰트 설정 (Windows 기준)
+        plt.rc('font', family='Malgun Gothic')
+        plt.rc('axes', unicode_minus=False)
+
+        # 2) 날짜 생성 (2025-12-01 ~ 2025-12-18)
+        dates = pd.date_range(start="2025-12-01", end="2025-12-18")
+
+        # 3) 외부 키워드 리스트 (TOP 10 기준)
+        keywords_ext = top10["keyword"].tolist()
+
+        # 4) 키워드별 발생건수 변화(임의 생성)
+        trend_data_ext = {}
+        for kw in keywords_ext:
+            counts = np.random.randint(500, 5000, size=len(dates))  # 18일 동안 발생건수
+            trend_data_ext[kw] = counts
+
+        # 5) 선 그래프 생성
+        st.markdown("#### 외부 키워드 발생건수 변화 추이 (가상 데이터)")
+        fig_ext, ax_ext = plt.subplots(figsize=(12, 6))
+
+        colors_ext = plt.cm.tab10(np.linspace(0, 1, len(keywords_ext)))
+
+        for i, kw in enumerate(keywords_ext):
+            ax_ext.plot(dates, trend_data_ext[kw], label=kw, color=colors_ext[i], marker="o")
+
+        # 6) y축: 발생건수
         ax_ext.set_ylabel("발생건수")
-        ax_ext.set_title("외부 키워드 Top 10 발생건수")
-        plt.xticks(rotation=45, ha="right")
+
+        # 7) x축 라벨 제거
+        ax_ext.set_xlabel("")
+
+        # 8) 그래프 제목
+        ax_ext.set_title("외부 키워드 발생건수 변화 추이 (가상 데이터)")
+
+        # 9) x축 날짜 라벨 회전
+        plt.xticks(rotation=45)
+
+        # 10) 범례 표시
+        ax_ext.legend(loc="upper left", bbox_to_anchor=(1, 1))
+
         st.pyplot(fig_ext)
     else:
         st.error("CSV 파일에 'keyword' 컬럼이 없습니다. 컬럼명을 확인해주세요.")
