@@ -3,6 +3,5 @@ matplotlib
 pandas
 plotly.express
 extra_streamlit_components
-time
 numpy
 altair
