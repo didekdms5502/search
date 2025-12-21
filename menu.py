@@ -171,8 +171,8 @@ tab1, tab2 = st.tabs(['내부 검색어', '외부 키워드'])
 # 내부 검색어 탭
 # ----------------------
 with tab1:
-    st.subheader("내부 검색어 Top 10")
-    
+    st.subheader("내부 검색어 추이")  
+
     # 내부 데이터 사용 불가. 임의로 추가
     keywords_internal = [
         "겨울 테마주", "미국금리", "금투자", "환율", "적금",
@@ -186,44 +186,11 @@ with tab1:
         "전일 대비": [f"{random.randint(-10, 15)}%" for _ in range(10)],
     }
 
-    df_internal = pd.DataFrame(data_internal)
-    table_html_internal = df_internal.to_html(index=False, classes="trend-table")
-
-    st.markdown(
-        """
-        <style>
-            table.trend-table {
-                width: 100%;
-                border-collapse: collapse;
-                font-size: 14px;
-            }
-            table.trend-table th,
-            table.trend-table td {
-                text-align: center;
-                padding: 6px 8px;
-                border: 1px solid #ddd;
-            }
-            table.trend-table thead th {
-                background-color: #f5f5f5;
-                font-weight: 600;
-            }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
-    st.markdown(table_html_internal, unsafe_allow_html=True)
+    df_internal = pd.DataFrame(data_internal)    
 
     # ----------------------
     # 🔥 내부 키워드 발생건수 변화 선 그래프
     # ----------------------
-    import time
-    import numpy as np
-    import pandas as pd
-    from datetime import datetime
-    import altair as alt
-
-    st.subheader("내부 검색어 발생건수 변화 추이")
 
     # 1) 날짜 생성 (이번 달 1일 ~ 오늘)
     end_date = datetime.today()
@@ -253,15 +220,20 @@ with tab1:
             .encode(
                 x=alt.X(
                     "date:N",
-                    title="날짜",
+                    title=None,
                     axis=alt.Axis(
-                        labelAngle=30,      # 🔥 30도 회전
-                        labelFontSize=10,   # 🔥 글자 크기 축소
+                        labelAngle=-30,     
+                        labelFontSize=10,   
                         labelOverlap=False
                     )
                 ),
-                y=alt.Y("count:Q", title="발생건수"),
-                color=alt.Color("keyword:N", title="키워드"),
+                y=alt.Y("count:Q", title=None, axis=alt.Axis(labelFontSize=10)),
+                color=alt.Color("keyword:N", title="keyword", 
+                                legend=alt.Legend(
+                                    labelFontSize=10,
+                                    titleFontSize=10,
+                                    symbolSize=40,
+                                    symbolStrokeWidth=1)),
                 tooltip=["date", "keyword", "count"]
             )
             .properties(height=400)
@@ -284,84 +256,200 @@ with tab1:
         chart_area.altair_chart(make_chart(df_chart), use_container_width=True)
 
         progress.progress(int((i / (len(date_labels) - 1)) * 100))
-        time.sleep(0.15)
+        time.sleep(0.10)
 
     progress.empty()
+
+    # ----------------------
+    # 표 출력
+    # ----------------------
+
+    table_html_internal = df_internal.to_html(index=False, classes="trend-table")
+    today = datetime.today()
+    st.markdown(
+        f"""
+        <p style="
+            font-size:20px;
+            font-weight:600;
+            margin-bottom:6px;
+        ">
+            {today.year}년 {today.month}월 {today.day}일 기준 내부 검색어 Top 10
+        </p>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        """
+        <style>
+            table.trend-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 14px;
+            }
+            table.trend-table th,
+            table.trend-table td {
+                text-align: center;
+                padding: 6px 8px;
+                border: 1px solid #ddd;
+            }
+            table.trend-table thead th {
+                background-color: #f5f5f5;
+                font-weight: 600;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(table_html_internal, unsafe_allow_html=True)
 
 # ----------------------
 # 외부 키워드 탭
 # ----------------------
 with tab2:
-    st.subheader("외부 키워드 Top 10")
+    st.subheader("외부 키워드 추이")
 
-    # 1) GitHub RAW CSV URL 입력
-    csv_url = "https://raw.githubusercontent.com/didekdms5502/search/main/trend_keywords.csv"
+    # ----------------------
+    # 1️⃣ CSV 로드 (당일 파일명)
+    # ----------------------
+    today = datetime.today()
+    today_str = today.strftime("%Y%m%d")
 
-    # 2) CSV 자동 불러오기
+    csv_url = f"https://raw.githubusercontent.com/didekdms5502/search/main/search_trend_{today_str}.csv"
+
     trend_df = pd.read_csv(csv_url)
 
-    # 3) TOP 10만 사용
+    # keyword 컬럼 필수 체크
+    if "keyword" not in trend_df.columns:
+        st.error("CSV 파일에 'keyword' 컬럼이 없습니다.")
+        st.stop()
+
+    # TOP 10
     top10 = trend_df.head(10).copy()
 
-    # 👉 count 컬럼 제거 (CSV에 count가 있을 때 자동 제거)
-    top10 = top10.drop(columns=["count"], errors="ignore")
-
-    # 4) 발생건수 / 전일대비 생성 (현재는 표에만 사용)
+    # 발생건수 / 전일대비 생성
     top10["발생건수"] = [random.randint(500, 5000) for _ in range(len(top10))]
     top10["전일 대비"] = [f"{random.randint(-10, 15)}%" for _ in range(len(top10))]
-
-    # 5) 순위 컬럼 추가
     top10.insert(0, "순위", range(1, len(top10) + 1))
 
-    # 6) HTML 테이블 변환
-    table_html_external = top10.to_html(index=False, classes="trend-table")
-    st.markdown(table_html_external, unsafe_allow_html=True)
-
     # ----------------------
-    # 🔥 외부 키워드 발생건수 변화 선 그래프
+    # 2️⃣ 🔥 외부 키워드 발생건수 변화 그래프 (Altair, 내부와 동일)
     # ----------------------
-    if "keyword" in trend_df.columns:
-        import matplotlib.pyplot as plt
+    end_date = datetime.today()
+    start_date = end_date.replace(day=1)
+    dates = pd.date_range(start=start_date, end=end_date)
+    date_labels = dates.strftime("%Y-%m-%d")
 
-        # 1) 한글 폰트 설정 (Windows 기준)
-        plt.rc('font', family='Malgun Gothic')
-        plt.rc('axes', unicode_minus=False)
+    keywords_ext = top10["keyword"].tolist()
 
-        # 2) 날짜 생성 (2025-12-01 ~ 2025-12-18)
-        dates = pd.date_range(start="2025-12-01", end="2025-12-18")
+    # 초기 데이터
+    data = []
+    for kw in keywords_ext:
+        data.append({
+            "date": date_labels[0],
+            "keyword": kw,
+            "count": random.randint(500, 5000)
+        })
 
-        # 3) 외부 키워드 리스트 (TOP 10 기준)
-        keywords_ext = top10["keyword"].tolist()
+    df_chart_ext = pd.DataFrame(data)
 
-        # 4) 키워드별 발생건수 변화(임의 생성)
-        trend_data_ext = {}
+    def make_chart_ext(df):
+        return (
+            alt.Chart(df)
+            .mark_line(point=True)
+            .encode(
+                x=alt.X(
+                    "date:N",
+                    title=None,
+                    axis=alt.Axis(
+                        labelAngle=-30,
+                        labelFontSize=10,
+                        labelOverlap=False
+                    )
+                ),
+                y=alt.Y(
+                    "count:Q",
+                    title=None,
+                    axis=alt.Axis(
+                        labelFontSize=10,
+                        format=","
+                    )
+                ),
+                color=alt.Color(
+                    "keyword:N",
+                    title="keyword",
+                    legend=alt.Legend(
+                        labelFontSize=10,
+                        titleFontSize=10,
+                        symbolSize=40,
+                        symbolStrokeWidth=1
+                    )
+                ),
+                tooltip=["date", "keyword", "count"]
+            )
+            .properties(height=400)
+        )
+
+    chart_area_ext = st.altair_chart(make_chart_ext(df_chart_ext), use_container_width=True)
+    progress_ext = st.progress(0)
+
+    for i in range(1, len(date_labels)):
+        new_rows = []
         for kw in keywords_ext:
-            counts = np.random.randint(500, 5000, size=len(dates))  # 18일 동안 발생건수
-            trend_data_ext[kw] = counts
+            new_rows.append({
+                "date": date_labels[i],
+                "keyword": kw,
+                "count": random.randint(500, 5000)
+            })
 
-        # 5) 선 그래프 생성
-        fig_ext, ax_ext = plt.subplots(figsize=(12, 6))
+        df_chart_ext = pd.concat([df_chart_ext, pd.DataFrame(new_rows)], ignore_index=True)
+        chart_area_ext.altair_chart(make_chart_ext(df_chart_ext), use_container_width=True)
 
-        colors_ext = plt.cm.tab10(np.linspace(0, 1, len(keywords_ext)))
+        progress_ext.progress(int((i / (len(date_labels) - 1)) * 100))
+        time.sleep(0.10)   # 🔥 내부와 동일한 속도
 
-        for i, kw in enumerate(keywords_ext):
-            ax_ext.plot(dates, trend_data_ext[kw], label=kw, color=colors_ext[i], marker="o")
+    progress_ext.empty()
 
-        # 6) y축: 발생건수
-        ax_ext.set_ylabel("발생건수")
+    # ----------------------
+    # 3️⃣ 표 출력
+    # ----------------------
+    table_html_external = top10.to_html(index=False, classes="trend-table")
 
-        # 7) x축 라벨 제거
-        ax_ext.set_xlabel("")
+    st.markdown(
+        f"""
+        <p style="
+            font-size:20px;
+            font-weight:600;
+            margin-bottom:6px;
+        ">
+            {today.year}년 {today.month}월 {today.day}일 기준 외부 키워드 Top 10
+        </p>
+        """,
+        unsafe_allow_html=True
+    )
 
-        # 8) 그래프 제목
-        ax_ext.set_title("외부 키워드 발생건수 변화 추이")
+    st.markdown(
+        """
+        <style>
+            table.trend-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 14px;
+            }
+            table.trend-table th,
+            table.trend-table td {
+                text-align: center;
+                padding: 6px 8px;
+                border: 1px solid #ddd;
+            }
+            table.trend-table thead th {
+                background-color: #f5f5f5;
+                font-weight: 600;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
-        # 9) x축 날짜 라벨 회전
-        plt.xticks(rotation=45)
-
-        # 10) 범례 표시
-        ax_ext.legend(loc="upper left", bbox_to_anchor=(1, 1))
-
-        st.pyplot(fig_ext)
-    else:
-        st.error("CSV 파일에 'keyword' 컬럼이 없습니다. 컬럼명을 확인해주세요.")
+    st.markdown(table_html_external, unsafe_allow_html=True)
