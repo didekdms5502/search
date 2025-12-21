@@ -88,10 +88,34 @@ st.title("🔍검색 키워드 트렌드 분석 자동화")
 # 헤더
 st.markdown(f'{today.year}년 {today.month}월 {today.day}일 기준 채팅수 Summary', help='전일대비 증감')
 
-day, month, year = st.columns(3)
-day.metric(label="Daily", value="30,080", delta="3.8%",  border=True)
-month.metric(label="Weekly", value="728,459", delta="1.5%",  border=True)
-year.metric(label="Monthly", value="5,897,125", delta="-1.8%",  border=True)
+# 내부 데이터 사용 불가. 임의로 추가
+day_col, month_col, year_col = st.columns(3)
+
+daily_value = random.randint(10_000, 50_000)
+weekly_value = random.randint(700_000, 1_000_000)
+monthly_value = random.randint(5_500_000, 7_500_000)
+
+day_col.metric(
+    label="Daily",
+    value=f"{daily_value:,}",
+    delta=f"{random.uniform(-5, 5):.1f}%",
+    border=True
+)
+
+month_col.metric(
+    label="Weekly",
+    value=f"{weekly_value:,}",
+    delta=f"{random.uniform(-3, 3):.1f}%",
+    border=True
+)
+
+year_col.metric(
+    label="Monthly",
+    value=f"{monthly_value:,}",
+    delta=f"{random.uniform(-3, 3):.1f}%",
+    border=True
+)
+
 
 # ----------------------
 # 메뉴 상태 초기화
@@ -146,7 +170,8 @@ tab1, tab2 = st.tabs(['내부 검색어', '외부 키워드'])
 # ----------------------
 with tab1:
     st.subheader("내부 검색어 Top 10")
-
+    
+    # 내부 데이터 사용 불가. 임의로 추가
     keywords_internal = [
         "겨울 테마주", "미국금리", "금투자", "환율", "적금",
         "투자", "신용대출", "후불교통", "상생페이백", "ISA"
@@ -197,7 +222,10 @@ with tab1:
     plt.rc('axes', unicode_minus=False)
 
     # 2) 날짜 생성 (2025-12-01 ~ 2025-12-18)
-    dates = pd.date_range(start="2025-12-01", end="2025-12-18")
+    end_date = datetime.today()
+    start_date = end_date.replace(day=1)  # 이번 달 1일 시작 (원하면 조정 가능)
+
+    dates = pd.date_range(start=start_date, end=end_date)
 
     # 3) 내부 키워드 리스트
     keywords = df_internal["keyword"].tolist()
