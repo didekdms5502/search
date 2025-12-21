@@ -414,6 +414,7 @@ with tab2:
     # ----------------------
     # 3️⃣ 표 출력
     # ----------------------
+    top10 = top10.drop(columns=["count"])
     table_html_external = top10.to_html(index=False, classes="trend-table")
 
     st.markdown(
