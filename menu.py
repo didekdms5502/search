@@ -4,6 +4,7 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
+import time
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -213,54 +214,45 @@ with tab1:
     st.markdown(table_html_internal, unsafe_allow_html=True)
 
     # ----------------------
-    # 🔥 내부 키워드 발생건수 변화 선 그래프
+    # 🔥 내부 키워드 발생건수 변화 선 그래프 (시간 흐름형, 숫자 날짜)
     # ----------------------
-    import matplotlib.pyplot as plt
 
-    # 1) 한글 폰트 설정 (Windows 기준)
-    plt.rc('font', family='Malgun Gothic')
-    plt.rc('axes', unicode_minus=False)
+    st.subheader("내부 검색어 발생건수 변화 추이")
 
-    # 2) 날짜 생성 (2025-12-01 ~ 2025-12-18)
+    # 1) 날짜 생성 (이번 달 1일 ~ 오늘)
     end_date = datetime.today()
-    start_date = end_date.replace(day=1)  # 이번 달 1일 시작 (원하면 조정 가능)
+    start_date = end_date.replace(day=1)
 
     dates = pd.date_range(start=start_date, end=end_date)
 
-    # 3) 내부 키워드 리스트
+    # 👉 날짜를 문자열(YYYY-MM-DD)로 변환
+    date_labels = dates.strftime("%Y-%m-%d")
+
+    # 2) 내부 키워드 리스트
     keywords = df_internal["keyword"].tolist()
 
-    # 4) 키워드별 발생건수 변화(임의 생성)
-    trend_data = {}
-    for kw in keywords:
-        # 18일 동안 500~5000 사이의 랜덤 발생건수 생성
-        counts = np.random.randint(500, 5000, size=len(dates))
-        trend_data[kw] = counts
+    # 3) 초기 데이터 (첫 날)
+    initial_data = pd.DataFrame(
+        {kw: [np.random.randint(500, 5000)] for kw in keywords},
+        index=[date_labels[0]]
+    )
 
-    # 5) 선 그래프 생성
-    fig_int, ax_int = plt.subplots(figsize=(12, 6))
+    chart = st.line_chart(initial_data)
 
-    colors = plt.cm.tab10(np.linspace(0, 1, len(keywords)))
+    progress = st.progress(0)
 
-    for i, kw in enumerate(keywords):
-        ax_int.plot(dates, trend_data[kw], label=kw, color=colors[i], marker="o")
+    # 4) 날짜가 흐르면서 한 줄씩 추가
+    for i in range(1, len(date_labels)):
+        new_row = pd.DataFrame(
+            {kw: [np.random.randint(500, 5000)] for kw in keywords},
+            index=[date_labels[i]]
+        )
 
-    # 6) y축: 발생건수 (순위 아님)
-    ax_int.set_ylabel("발생건수")
+        chart.add_rows(new_row)
+        progress.progress(int((i / (len(date_labels) - 1)) * 100))
+        time.sleep(0.15)  # 속도 조절
 
-    # 7) x축 라벨 제거
-    ax_int.set_xlabel("")
-
-    # 8) 그래프 제목
-    ax_int.set_title("내부 검색어 발생건수 변화 추이")
-
-    # 9) x축 날짜 라벨 회전
-    plt.xticks(rotation=45)
-
-    # 10) 범례 표시
-    ax_int.legend(loc="upper left", bbox_to_anchor=(1, 1))
-
-    st.pyplot(fig_int)
+    progress.empty()
 
 # ----------------------
 # 외부 키워드 탭
