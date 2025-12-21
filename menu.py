@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 import time
+import altair as alt
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -214,43 +215,76 @@ with tab1:
     st.markdown(table_html_internal, unsafe_allow_html=True)
 
     # ----------------------
-    # 🔥 내부 키워드 발생건수 변화 선 그래프 (시간 흐름형, 숫자 날짜)
+    # 🔥 내부 키워드 발생건수 변화 선 그래프
     # ----------------------
+    import time
+    import numpy as np
+    import pandas as pd
+    from datetime import datetime
+    import altair as alt
 
     st.subheader("내부 검색어 발생건수 변화 추이")
 
     # 1) 날짜 생성 (이번 달 1일 ~ 오늘)
     end_date = datetime.today()
     start_date = end_date.replace(day=1)
-
     dates = pd.date_range(start=start_date, end=end_date)
-
-    # 👉 날짜를 문자열(YYYY-MM-DD)로 변환
     date_labels = dates.strftime("%Y-%m-%d")
 
-    # 2) 내부 키워드 리스트
+    # 2) 키워드
     keywords = df_internal["keyword"].tolist()
 
-    # 3) 초기 데이터 (첫 날)
-    initial_data = pd.DataFrame(
-        {kw: [np.random.randint(500, 5000)] for kw in keywords},
-        index=[date_labels[0]]
-    )
+    # 3) 초기 데이터
+    data = []
+    for kw in keywords:
+        data.append({
+            "date": date_labels[0],
+            "keyword": kw,
+            "count": np.random.randint(500, 5000)
+        })
 
-    chart = st.line_chart(initial_data)
+    df_chart = pd.DataFrame(data)
 
-    progress = st.progress(0)
-
-    # 4) 날짜가 흐르면서 한 줄씩 추가
-    for i in range(1, len(date_labels)):
-        new_row = pd.DataFrame(
-            {kw: [np.random.randint(500, 5000)] for kw in keywords},
-            index=[date_labels[i]]
+    # 4) Altair 차트 생성 함수
+    def make_chart(df):
+        return (
+            alt.Chart(df)
+            .mark_line(point=True)
+            .encode(
+                x=alt.X(
+                    "date:N",
+                    title="날짜",
+                    axis=alt.Axis(
+                        labelAngle=30,      # 🔥 30도 회전
+                        labelFontSize=10,   # 🔥 글자 크기 축소
+                        labelOverlap=False
+                    )
+                ),
+                y=alt.Y("count:Q", title="발생건수"),
+                color=alt.Color("keyword:N", title="키워드"),
+                tooltip=["date", "keyword", "count"]
+            )
+            .properties(height=400)
         )
 
-        chart.add_rows(new_row)
+    chart_area = st.altair_chart(make_chart(df_chart), use_container_width=True)
+    progress = st.progress(0)
+
+    # 5) 날짜가 흐르면서 데이터 추가
+    for i in range(1, len(date_labels)):
+        new_rows = []
+        for kw in keywords:
+            new_rows.append({
+                "date": date_labels[i],
+                "keyword": kw,
+                "count": np.random.randint(500, 5000)
+            })
+
+        df_chart = pd.concat([df_chart, pd.DataFrame(new_rows)], ignore_index=True)
+        chart_area.altair_chart(make_chart(df_chart), use_container_width=True)
+
         progress.progress(int((i / (len(date_labels) - 1)) * 100))
-        time.sleep(0.15)  # 속도 조절
+        time.sleep(0.15)
 
     progress.empty()
 
