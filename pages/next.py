@@ -7,7 +7,8 @@ st.set_page_config(page_title="Sample", page_icon="📈")
 st.markdown("""
 <p style="font-size:20px; font-weight:bold; line-height:1.6; text-align:center;">
 이번 프로젝트를 기반으로,<br>
-내부 데이터를 활용하여 분석을 고도화하고 완성도를 높여 나가려고 합니다.<br> 
+회사 내부 망에서 내부 데이터를 활용하여<br>
+분석을 고도화하고 완성도를 높여 나가려고 합니다.<br> 
 한 학기동안 감사했습니다.😊🙇‍♀️
 </p>
 """, unsafe_allow_html=True)
